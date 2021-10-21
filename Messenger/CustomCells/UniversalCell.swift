@@ -63,6 +63,8 @@ class UniversalCell: UITableViewCell {
 
     }
 
+//MARK: - Public methods
+
     func configure(user: Users) {
         image.kf.setImage(with: URL(string: user.avatar))
         nameLabel.text = user.firstName  + " " + user.lastName
