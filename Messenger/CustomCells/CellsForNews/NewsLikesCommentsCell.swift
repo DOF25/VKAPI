@@ -7,33 +7,43 @@
 
 import UIKit
 
+protocol LikesCommentsDelegate: AnyObject {
+
+    func likeAndCommentCell(_ newsLikesCommentsCell: NewsLikesCommentsCell, buttonTappedFor post: Posts)
+}
+
 final class NewsLikesCommentsCell: UITableViewCell {
+
+//MARK: - Public property
+
+    weak var delegate: LikesCommentsDelegate?
+    var post: Posts?
+    var isLiked = false
 
 // MARK: - Private property
 
-    let likeButton: UIButton = {
+    var likeButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setImage(UIImage(systemName: "heart"), for: .normal)
         return button
     }()
 
-    let likeCounterLabel: UILabel = {
+    var likeCounterLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.adjustsFontSizeToFitWidth = true
-        label.text = "Number of Likes"
         return label
     }()
 
-    let commentsImage: UIImageView = {
+    private let commentsImage: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.image = UIImage(systemName: "doc.append")
         return imageView
     }()
 
-    let commentsCounter: UILabel = {
+    private let commentsCounter: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.adjustsFontSizeToFitWidth = true
@@ -46,7 +56,8 @@ final class NewsLikesCommentsCell: UITableViewCell {
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setupLikeImage()
+        setupLikeButton()
+        self.likeButton.addTarget(self, action: #selector(like(_:)), for: .touchUpInside)
         setuplikeCounterLabel()
         setupCommentsImage()
         setupCommentsCounter()
@@ -61,9 +72,9 @@ final class NewsLikesCommentsCell: UITableViewCell {
 
 // MARK: - Private methods
 
-    private func setupLikeImage() {
+    private func setupLikeButton() {
 
-        addSubview(likeButton)
+        contentView.addSubview(likeButton)
         NSLayoutConstraint.activate([
             likeButton.centerYAnchor.constraint(equalTo: centerYAnchor),
             likeButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 4),
@@ -71,17 +82,18 @@ final class NewsLikesCommentsCell: UITableViewCell {
             likeButton.widthAnchor.constraint(equalTo: likeButton.heightAnchor, multiplier: 1/1)
         ])
 
-        likeButton.addTarget(self, action: #selector(like), for: .touchUpInside)
-
     }
 
-    @objc private func like() {
-        likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+    @objc func like(_ sender: UIButton) {
+
+        guard let post = post,
+              let delegate = delegate else { return }
+        self.delegate?.likeAndCommentCell(self, buttonTappedFor: post)
     }
 
     private func setuplikeCounterLabel() {
 
-        addSubview(likeCounterLabel)
+        contentView.addSubview(likeCounterLabel)
 
         NSLayoutConstraint.activate([
             likeCounterLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
@@ -91,7 +103,7 @@ final class NewsLikesCommentsCell: UITableViewCell {
 
     private func setupCommentsImage() {
 
-        addSubview(commentsImage)
+        contentView.addSubview(commentsImage)
 
         NSLayoutConstraint.activate([
             commentsImage.centerYAnchor.constraint(equalTo: centerYAnchor),
@@ -103,7 +115,7 @@ final class NewsLikesCommentsCell: UITableViewCell {
 
     private func setupCommentsCounter() {
 
-        addSubview(commentsCounter)
+        contentView.addSubview(commentsCounter)
 
         NSLayoutConstraint.activate([
             commentsCounter.centerYAnchor.constraint(equalTo: centerYAnchor),

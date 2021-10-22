@@ -206,6 +206,9 @@ extension NewsController: UITableViewDataSource {
                         NewsLikesCommentsCell else { return UITableViewCell() }
 
             cell.configure(post: post)
+            cell.selectionStyle = .none
+            cell.delegate = self
+            cell.post = post
             cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
             
             return cell
@@ -272,6 +275,56 @@ extension NewsController: UITableViewDelegate {
         }
 
     }
+
+}
+
+//MARK: LikesCommentsDelegate
+
+extension NewsController: LikesCommentsDelegate {
+
+    func likeAndCommentCell(_ newsLikesCommentsCell: NewsLikesCommentsCell, buttonTappedFor post: Posts) {
+
+        let likedImage = UIImage(systemName: "heart.fill")
+        let unlikedImage = UIImage(systemName: "heart")
+
+        guard let likes = Int(newsLikesCommentsCell.likeCounterLabel.text ?? "") else { return }
+
+        if !newsLikesCommentsCell.isLiked {
+            newsLikesCommentsCell.likeButton.setImage(likedImage, for: .normal)
+            let currentLikes = likes + 1
+            newsLikesCommentsCell.likeCounterLabel.text = String(currentLikes)
+            newsLikesCommentsCell.isLiked = true
+        }
+        else {
+            newsLikesCommentsCell.likeButton.setImage(unlikedImage, for: .normal)
+            let currentLikes = likes - 1
+            newsLikesCommentsCell.likeCounterLabel.text = String(currentLikes)
+            newsLikesCommentsCell.isLiked = false
+        }
+    }
+
+//        guard let text = likeLabel.text else { return }
+//
+//        guard let numberOfLikes = Int(text) else { return }
+//
+//        var isLiked = false
+//
+//        if isLiked == false {
+//            button.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+//            let currentLikes = numberOfLikes + 1
+//            likeLabel.text = String(currentLikes)
+//            isLiked = true
+//
+//        } else {
+//
+//            button.setImage(UIImage(systemName: "heart"), for: .normal)
+//            let currentLikes = numberOfLikes - 1
+//            likeLabel.text = String(currentLikes)
+//            isLiked = true
+//        }
+
+
+
 
 }
 
