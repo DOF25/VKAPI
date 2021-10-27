@@ -20,8 +20,6 @@ final class NewsLikesCommentsCell: UITableViewCell {
     var post: Posts?
     var isLiked = false
 
-// MARK: - Private property
-
     var likeButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -35,6 +33,8 @@ final class NewsLikesCommentsCell: UITableViewCell {
         label.adjustsFontSizeToFitWidth = true
         return label
     }()
+
+// MARK: - Private property
 
     private let commentsImage: UIImageView = {
         let imageView = UIImageView()
