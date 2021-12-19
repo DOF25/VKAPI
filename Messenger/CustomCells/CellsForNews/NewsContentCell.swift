@@ -22,15 +22,15 @@ final class NewsContentCell: UITableViewCell {
     }()
 
 //MARK: - Private property
-    private let showMoreButton: UIButton = {
-        let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("ещё", for: .normal)
-        button.setTitleColor(.systemBlue, for: .normal)
-        button.backgroundColor = .clear
-        button.titleLabel?.font = UIFont.preferredFont(forTextStyle: .caption2)
-        return button
-    }()
+//    private let showMoreButton: UIButton = {
+//        let button = UIButton()
+//        button.translatesAutoresizingMaskIntoConstraints = false
+//        button.setTitle("ещё", for: .normal)
+//        button.setTitleColor(.systemBlue, for: .normal)
+//        button.backgroundColor = .clear
+//        button.titleLabel?.font = UIFont.preferredFont(forTextStyle: .caption2)
+//        return button
+//    }()
 
 
 // MARK: - Life cycle
@@ -38,7 +38,7 @@ final class NewsContentCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupNewsText()
-        setupShowMoreButton()
+//        setupShowMoreButton()
         contentView.clipsToBounds = true
 
     }
@@ -60,16 +60,16 @@ final class NewsContentCell: UITableViewCell {
         ])
     }
 
-    private func setupShowMoreButton() {
-
-        addSubview(showMoreButton)
-        NSLayoutConstraint.activate([
-            showMoreButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 4),
-            showMoreButton.heightAnchor.constraint(equalToConstant: 20),
-            showMoreButton.topAnchor.constraint(equalTo: newsText.bottomAnchor, constant: 2)
-        ])
-
-    }
+//    private func setupShowMoreButton() {
+//
+//        addSubview(showMoreButton)
+//        NSLayoutConstraint.activate([
+//            showMoreButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 4),
+//            showMoreButton.heightAnchor.constraint(equalToConstant: 20),
+//            showMoreButton.topAnchor.constraint(equalTo: newsText.bottomAnchor, constant: 2)
+//        ])
+//
+//    }
 
     func configure(post: Posts) {
 

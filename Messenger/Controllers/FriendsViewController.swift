@@ -23,13 +23,14 @@ final class FriendsViewController: UIViewController {
         let searchBar = UISearchBar()
         searchBar.placeholder = "Найти друга"
         searchBar.translatesAutoresizingMaskIntoConstraints = false
-        searchBar.sizeToFit()
-        searchBar.isTranslucent = false
         return searchBar
     }()
 
     private var friends: Results<Users>?
     private var token: NotificationToken?
+    private var filteredFriends: [Users]!
+    private var searchFlag = false
+
 
     init(network: NetworkLayerProtocol? = nil) {
         self.network = network
@@ -51,20 +52,25 @@ final class FriendsViewController: UIViewController {
         setupSearchBar()
         setupTableView()
         loadAndNotificateTableView()
-        
+        self.filteredFriends = arrayForSearch()
     }
 
 //MARK: - Private methods
+
+    private func arrayForSearch() -> [Users] {
+        guard let friends = self.friends else { return [] }
+        return Array(friends)
+    }
 
     private func setupSearchBar() {
 
         view.addSubview(searchBar)
 
+        let safeArea = self.view.safeAreaLayoutGuide
         NSLayoutConstraint.activate([
-            searchBar.topAnchor.constraint(equalTo: view.topAnchor),
-            searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            searchBar.heightAnchor.constraint(equalToConstant: 50)
+            searchBar.topAnchor.constraint(equalTo: safeArea.topAnchor),
+            searchBar.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor),
+            searchBar.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor),
         ])
 
         searchBar.delegate = self
@@ -169,6 +175,19 @@ final class FriendsViewController: UIViewController {
 
 extension FriendsViewController: UISearchBarDelegate {
 
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+
+        if searchText.isEmpty {
+            filteredFriends = arrayForSearch()
+        } else {
+            searchFlag = true
+            filteredFriends = filteredFriends.filter { ($0.firstName + " " + $0.lastName).lowercased()
+                .contains(searchText.lowercased())}
+        }
+
+        self.tableView.reloadData()
+
+    }
 }
 
 //MARK: - Extension: Delegate
@@ -181,7 +200,7 @@ extension FriendsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle,
                    forRowAt indexPath: IndexPath) {
 
-        guard let friends = friends?[indexPath.row] else { return }
+        let friends = filteredFriends[indexPath.row]
         let configuration = Realm.Configuration.init(deleteRealmIfMigrationNeeded: true)
         if editingStyle == .delete {
             do {
@@ -199,7 +218,7 @@ extension FriendsViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
-        guard let friendsList = friends else { return }
+        guard let friendsList = filteredFriends else { return }
         let friends = friendsList[indexPath.row]
         let friendsId = friends.id
 
@@ -220,8 +239,8 @@ extension FriendsViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let friends = friends else { return Int() }
-        return friends.count
+        //guard let friends = arrayForSearch() else { return Int() }
+        return filteredFriends.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -229,8 +248,8 @@ extension FriendsViewController: UITableViewDataSource {
                                                        for: indexPath) as? UniversalCell else {
             return UITableViewCell()
         }
-        guard let friends = friends else { return UITableViewCell() }
-        cell.configure(user: friends[indexPath.row])
+        //guard let friends = filteredFriends else { return UITableViewCell() }
+        cell.configure(user: filteredFriends[indexPath.row])
         return cell
     }
 
